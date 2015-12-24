@@ -398,7 +398,8 @@ gint snoop_key_press(GtkWidget   *grab_widget,
 
       if (data->hidden)
         return FALSE;
-      if (event->state & GDK_SHIFT_MASK)
+      //if (event->state & GDK_SHIFT_MASK)
+      if (event->state & GDK_CONTROL_MASK)
         redo_drawing (data);
       else
         undo_drawing (data);
