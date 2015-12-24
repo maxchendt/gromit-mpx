@@ -2,11 +2,18 @@ I modify a bit to fit Thinkpad Yoga 12
 
 1. exit painting when clear screen (master branch do not exit painting mode when clear screen)
 
-2. swap shortcut key for "clear screen" and "toggle visibility". In my Yoga 12, `gromit-mpx-git --key Pause --undo-key Delete`, then
+2. swap shortcut key for "clear screen" and "toggle visibility".
 
-- Fn+P:   toggle painting
-- Fn+B:   clear screen **and exit painting**
-- Fn+SHIFT-P:   toggle visibility
+3. for "redo last undone stroke", change the modify key from Shft to Ctrl
+
+In my Yoga 12, `gromit-mpx-git --key F10 --undo-key Pause`, then
+
+- F10:   toggle painting
+- Ctrl+F10:   clear screen **and exit painting**
+- SHFT+F10:   toggle visibility
+- Fn+P:   undo last stroke
+- Fn+B:   redo last undone stroke
+
 
 
 
