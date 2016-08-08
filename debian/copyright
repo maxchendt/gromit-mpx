@@ -1,0 +1,32 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: gromit-mpx
+Upstream-Contact: Christian Beier <dontmind@freeshell.org>
+Source: https://github.com/bk138/gromit-mpx
+	git://github.com/bk138/gromit-mpx
+License: GPL-2+
+
+Files: *
+Copyright: 2000 Simon Budig <Simon.Budig@unix-ag.org>
+	   2009, 2010 Christian Beier <dontmind@freeshell.org>
+License: GPL-2+
+
+Files: debian/*
+Copyright: 2010, 2011 Christian Beier <dontmind@freeshell.org>
+	   2013 Barak A. Pearlmutter <bap@debian.org>
+License: GPL-2+
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ . 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU General Public
+ License version 2 can be found in "/usr/share/common-licenses/GPL-2".
+ and the complete text of the GNU General Public License version 3 can
+ be found in "/usr/share/common-licenses/GPL-3".

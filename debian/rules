@@ -1,0 +1,11 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with autoreconf --parallel
+
+export CPPFLAGS=-DDEFAULT_HOTKEY='"Pause"'
+
+override_dh_auto_install:
+	dh_auto_install
+	echo "Installed later under different name by dh_installchangelogs:"
+	rm --verbose debian/gromit-mpx/usr/share/doc/gromit-mpx/ChangeLog

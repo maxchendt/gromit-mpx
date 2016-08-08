@@ -1,0 +1,4 @@
+version=3
+
+http://githubredir.debian.net/github/bk138/gromit-mpx \
+ /github/bk138/gromit-mpx/([0-9.]*)\.tar\.gz
