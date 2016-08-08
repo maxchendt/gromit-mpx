@@ -1,4 +1,4 @@
-I modify a bit to fit Thinkpad Yoga 12
+I modify a bit to fit Thinkpad that do not have a Pause Key (for example, Yoga 12, X230, X1 Yoga etc.)
 
 1. exit painting when clear screen (master branch do not exit painting mode when clear screen)
 
@@ -6,7 +6,15 @@ I modify a bit to fit Thinkpad Yoga 12
 
 3. for "redo last undone stroke", change the modify key from Shft to Ctrl
 
-In my Yoga 12, `gromit-mpx-git --key F10 --undo-key Pause`, then
+On Ubuntu, to build dep package
+
+    sudo apt-get install --no-install-recommends git build-essential dh-autoreconf libgtk-3-dev
+    git clone -b Yoga12 https://github.com/maxchendt/gromit-mpx.git
+    cd gromit-mpx
+    dpkg-buildpackage -b -us -uc -i
+    cd ..
+    sudo dpkg -i gromit-mpx*.deb
+Then, the hotkey is `F10`, and undokey is `Pause`. In my Yoga 12 (In Yoga 12, `Fn+P==Pause`, `Fn+B==Ctrl+Pause==Break`)
 
 - F10:   toggle painting
 - Ctrl+F10:   clear screen **and exit painting**
