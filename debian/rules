@@ -3,7 +3,8 @@
 %:
 	dh $@ --with autoreconf --parallel
 
-export CPPFLAGS=-DDEFAULT_HOTKEY='"Pause"'
+# export CPPFLAGS=-DDEFAULT_HOTKEY='"Pause"'
+export CPPFLAGS=-DDEFAULT_HOTKEY='"F10"' -DEFAULT_UNDOKEY='"Pause"'
 
 override_dh_auto_install:
 	dh_auto_install
