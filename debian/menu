@@ -2,7 +2,7 @@
 	needs="X11"					\
 	section="Applications/Graphics"	                \
 	title="Gromit-MPX"				\
-	command="/usr/bin/gromit-mpx --key F10 --undo-key Pause"			\
+	command="/usr/bin/gromit-mpx"			\
 	description="On screen display annotator"	\
 	hints="X11"					\
 	icon="/usr/share/pixmaps/gromit-mpx.xpm"	\
