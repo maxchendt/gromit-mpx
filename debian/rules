@@ -1,11 +1,12 @@
 #!/usr/bin/make -f
 
-%:
-	dh $@ --with autoreconf --parallel
-
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 export CPPFLAGS=-DDEFAULT_HOTKEY='"F10"' -DDEFAULT_UNDOKEY='"Pause"'
+
+%:
+	dh $@
 
 override_dh_auto_install:
 	dh_auto_install
-	echo "Installed later under different name by dh_installchangelogs:"
-	rm --verbose debian/gromit-mpx/usr/share/doc/gromit-mpx/ChangeLog
+	@echo "Installed later under different name by dh_installchangelogs:"
+	-rm --verbose debian/gromit-mpx/usr/share/doc/gromit-mpx/ChangeLog

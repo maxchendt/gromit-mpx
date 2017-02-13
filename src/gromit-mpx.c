@@ -29,6 +29,7 @@
 #include "config.h"
 #include "input.h"
 #include "gromit-mpx.h"
+#include "build-config.h"
 
 #include "paint_cursor.xpm"
 #include "erase_cursor.xpm"
@@ -37,7 +38,7 @@
 
 GromitPaintContext *paint_context_new (GromitData *data, 
 				       GromitPaintType type,
-				       GdkColor *paint_color, 
+				       GdkRGBA *paint_color, 
 				       guint width,
 				       guint arrowsize,
 				       guint minwidth)
@@ -55,7 +56,7 @@ GromitPaintContext *paint_context_new (GromitData *data,
   
   context->paint_ctx = cairo_create (data->backbuffer);
 
-  gdk_cairo_set_source_color(context->paint_ctx, paint_color);
+  gdk_cairo_set_source_rgba(context->paint_ctx, paint_color);
   if(!data->composited)
     cairo_set_antialias(context->paint_ctx, CAIRO_ANTIALIAS_NONE);
   cairo_set_line_width(context->paint_ctx, width);
@@ -93,8 +94,7 @@ void paint_context_print (gchar *name,
   g_printerr ("width: %3d, ", context->width);
   g_printerr ("minwidth: %3d, ", context->minwidth);
   g_printerr ("arrowsize: %.2f, ", context->arrowsize);
-  g_printerr ("color: #%02X%02X%02X\n", context->paint_color->red >> 8,
-              context->paint_color->green >> 8, context->paint_color->blue >> 8);
+  g_printerr ("color: %s\n", gdk_rgba_to_string(context->paint_color));
 }
 
 
@@ -281,7 +281,6 @@ void clear_screen (GromitData *data)
     }
 
   data->painted = 0;
-  hide_window (data);	//exit painting mode
 
   if(data->debug)
     g_printerr ("DEBUG: Cleared screen.\n");
@@ -612,7 +611,7 @@ void draw_arrow (GromitData *data,
       cairo_line_to(devdata->cur_context->paint_ctx, arrowhead[3].x, arrowhead[3].y);
       cairo_fill(devdata->cur_context->paint_ctx);
 
-      gdk_cairo_set_source_color(devdata->cur_context->paint_ctx, data->black);
+      gdk_cairo_set_source_rgba(devdata->cur_context->paint_ctx, data->black);
 
       cairo_move_to(devdata->cur_context->paint_ctx, arrowhead[0].x, arrowhead[0].y);
       cairo_line_to(devdata->cur_context->paint_ctx, arrowhead[1].x, arrowhead[1].y);
@@ -621,7 +620,7 @@ void draw_arrow (GromitData *data,
       cairo_line_to(devdata->cur_context->paint_ctx, arrowhead[0].x, arrowhead[0].y);
       cairo_stroke(devdata->cur_context->paint_ctx);
 
-      gdk_cairo_set_source_color(devdata->cur_context->paint_ctx, devdata->cur_context->paint_color);
+      gdk_cairo_set_source_rgba(devdata->cur_context->paint_ctx, devdata->cur_context->paint_color);
     
       data->modified = 1;
 
@@ -668,12 +667,12 @@ void setup_main_app (GromitData *data, gboolean activate)
   g_free(data->white);
   g_free(data->black);
   g_free(data->red);
-  data->white = g_malloc (sizeof (GdkColor));
-  data->black = g_malloc (sizeof (GdkColor));
-  data->red   = g_malloc (sizeof (GdkColor));
-  gdk_color_parse ("#FFFFFF", data->white);
-  gdk_color_parse ("#000000", data->black);
-  gdk_color_parse ("#FF0000", data->red);
+  data->white = g_malloc (sizeof (GdkRGBA));
+  data->black = g_malloc (sizeof (GdkRGBA));
+  data->red   = g_malloc (sizeof (GdkRGBA));
+  gdk_rgba_parse(data->white, "#FFFFFF");
+  gdk_rgba_parse(data->black, "#000000");
+  gdk_rgba_parse(data->red, "#FF0000");
 
 
   /* 
@@ -877,14 +876,112 @@ void setup_main_app (GromitData *data, gboolean activate)
   /* 
      TRAY ICON
   */
-  data->trayicon = gtk_status_icon_new_from_file("/usr/share/pixmaps/gromit-mpx.png");
-  gtk_status_icon_set_tooltip_text (data->trayicon, "Gromit-MPX");
-  g_signal_connect (data->trayicon, "activate",
-		    G_CALLBACK (on_trayicon_activate), data);
-  g_signal_connect (data->trayicon, "popup-menu",
-		    G_CALLBACK (on_trayicon_menu), data);
+  data->trayicon = app_indicator_new (PACKAGE_NAME,
+				      PACKAGE_NAME,
+				      APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+
+  app_indicator_set_status (data->trayicon, APP_INDICATOR_STATUS_ACTIVE);
+
+
+
+  /* create the menu */
+  GtkWidget *menu = gtk_menu_new ();
+
+  /* Create the menu items */
+  GtkWidget* toggle_paint_item = gtk_menu_item_new_with_label ("Toggle Painting");
+  GtkWidget* clear_item = gtk_menu_item_new_with_label ("Clear Screen");
+  GtkWidget* toggle_vis_item = gtk_menu_item_new_with_label ("Toggle Visibility");
+  GtkWidget* thicker_lines_item = gtk_menu_item_new_with_label ("Thicker Lines");
+  GtkWidget* thinner_lines_item = gtk_menu_item_new_with_label ("Thinner Lines");
+  GtkWidget* opacity_bigger_item = gtk_menu_item_new_with_label ("Bigger Opacity");
+  GtkWidget* opacity_lesser_item = gtk_menu_item_new_with_label ("Lesser Opacity");
+  GtkWidget* undo_item = gtk_menu_item_new_with_label ("Undo");
+  GtkWidget* redo_item = gtk_menu_item_new_with_label ("Redo");
+
+  GtkWidget* sep_item = gtk_separator_menu_item_new();
+  GtkWidget* help_item = gtk_menu_item_new_with_mnemonic("_Help");
+  GtkWidget* about_item = gtk_menu_item_new_with_mnemonic("_About");
+  GtkWidget* quit_item = gtk_menu_item_new_with_mnemonic("_Quit");
+
+
+  /* Add them to the menu */
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), toggle_paint_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), clear_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), toggle_vis_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), thicker_lines_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), thinner_lines_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), opacity_bigger_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), opacity_lesser_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), undo_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), redo_item);
+
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), sep_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), help_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), about_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), quit_item);
+
+
+  /* Attach the callback functions to the respective activate signal */
+  g_signal_connect(toggle_paint_item, "button-press-event",
+		   G_CALLBACK(on_toggle_paint),
+		   data);
+  g_signal_connect(G_OBJECT (clear_item), "activate",
+		   G_CALLBACK (on_clear),
+		   data);
+  g_signal_connect(G_OBJECT (toggle_vis_item), "activate",
+		   G_CALLBACK (on_toggle_vis),
+		   data);
+  g_signal_connect(G_OBJECT (thicker_lines_item), "activate",
+		   G_CALLBACK (on_thicker_lines),
+		   data);
+  g_signal_connect(G_OBJECT (thinner_lines_item), "activate",
+		   G_CALLBACK (on_thinner_lines),
+		   data);
+  g_signal_connect(G_OBJECT (opacity_bigger_item), "activate",
+		   G_CALLBACK (on_opacity_bigger),
+		   data);
+  g_signal_connect(G_OBJECT (opacity_lesser_item), "activate",
+		   G_CALLBACK (on_opacity_lesser),
+		   data);
+  g_signal_connect(G_OBJECT (undo_item), "activate",
+		   G_CALLBACK (on_undo),
+		   data);
+  g_signal_connect(G_OBJECT (redo_item), "activate",
+		   G_CALLBACK (on_redo),
+		   data);
+
+  g_signal_connect(G_OBJECT (help_item), "activate",
+		   G_CALLBACK (on_help),
+		   data);
+  g_signal_connect(G_OBJECT (about_item), "activate",
+		   G_CALLBACK (on_about),
+		   NULL);
+  g_signal_connect(G_OBJECT (quit_item), "activate",
+		   G_CALLBACK (gtk_main_quit),
+		   NULL);
+
+
+  /* We do need to show menu items */
+  gtk_widget_show (toggle_paint_item);
+  gtk_widget_show (clear_item);
+  gtk_widget_show (toggle_vis_item);
+  gtk_widget_show (thicker_lines_item);
+  gtk_widget_show (thinner_lines_item);
+  gtk_widget_show (opacity_bigger_item);
+  gtk_widget_show (opacity_lesser_item);
+  gtk_widget_show (undo_item);
+  gtk_widget_show (redo_item);
+
+  gtk_widget_show (sep_item);
+  gtk_widget_show (help_item);
+  gtk_widget_show (about_item);
+  gtk_widget_show (quit_item);
+
+
+  app_indicator_set_menu (data->trayicon, GTK_MENU(menu));
 
 }
+
 
 void parse_print_help (gpointer key, gpointer value, gpointer user_data)
 {
@@ -955,7 +1052,7 @@ int app_parse_args (int argc, char **argv, GromitData *data)
              {
                data->opacity = strtod (argv[i+1], NULL);
                g_printerr ("Opacity set to: %.2f\n", data->opacity);
-               gtk_window_set_opacity(GTK_WINDOW(data->win), data->opacity);
+               gtk_widget_set_opacity(data->win, data->opacity);
                i++;
              }
            else
@@ -1124,7 +1221,7 @@ int main (int argc, char **argv)
 
   gtk_window_fullscreen(GTK_WINDOW(data->win)); 
   gtk_window_set_skip_taskbar_hint(GTK_WINDOW(data->win), TRUE);
-  gtk_window_set_opacity(GTK_WINDOW(data->win), data->opacity);
+  gtk_widget_set_opacity(data->win, data->opacity);
   gtk_widget_set_app_paintable (data->win, TRUE);
   gtk_window_set_decorated (GTK_WINDOW (data->win), FALSE);
 

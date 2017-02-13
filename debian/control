@@ -2,16 +2,19 @@ Source: gromit-mpx
 Section: x11
 Priority: optional
 Maintainer: Barak A. Pearlmutter <bap@debian.org>
-Build-Depends: debhelper (>= 9), dh-autoreconf, libgtk-3-dev
-Standards-Version: 3.9.5
-Homepage: https://github.com/maxchendt/gromit-mpx/tree/Yoga12
-Vcs-Git: https://github.com/maxchendt/gromit-mpx/tree/Yoga12
-Vcs-Browser: https://github.com/maxchendt/gromit-mpx/tree/Yoga12
+Build-Depends: debhelper (>= 9),
+	cmake,
+	libgtk-3-dev,
+	libappindicator3-dev
+Standards-Version: 3.9.8
+Homepage: https://github.com/bk138/gromit-mpx
+Vcs-Git: git://anonscm.debian.org/collab-maint/gromit-mpx.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/gromit-mpx.git
 
 Package: gromit-mpx
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: GTK based tool to make annotations on screen with multiple pointers
+Description: GTK+ based tool to make annotations on screen with multiple pointers
  Gromit-MPX enables you to make annotations on your screen using 
  multiple pointing devices at once.
  .

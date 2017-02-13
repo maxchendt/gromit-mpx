@@ -1,17 +1,9 @@
-gromit-mpx (1.1.4-1) unstable; urgency=medium
+gromit-mpx (1.2-4) unstable; urgency=medium
 
-  * Thinkpad version (add debian/)
+  * Yoga 12 version,  the hotkey is F10, and undokey is Pause
+  * swap shortcut key for "clear screen" and "toggle visibility".
+  * for "redo last undone stroke", change the modify key from Shft to Ctrl
 
- -- CHEN Deng-Ta <no@no.org>  Mon, 8 Aug 2016 17:53:08 +0800
 
-gromit-mpx (1.1.2-1) unstable; urgency=medium
+ -- CHEN Deng-Ta <no@no.org>  Sun, 12 Feb 2017 22:33:08 +0800
 
-  * Yoga 12 version
-
- -- CHEN Deng-Ta <no@no.org>  Mon, 8 Aug 2016 15:13:07 +0800
-
-gromit-mpx (1.1+git.1.fb3c7f8-1) unstable; urgency=medium
-
-  * Track upstream development
-
- -- Barak A. Pearlmutter <bap@debian.org>  Thu, 20 Mar 2014 13:51:07 +0000

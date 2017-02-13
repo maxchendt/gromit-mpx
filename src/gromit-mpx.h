@@ -27,6 +27,7 @@
 #include <glib.h>
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
+#include <libappindicator/app-indicator.h>
 
 
 #define GROMIT_MOUSE_EVENTS ( GDK_POINTER_MOTION_MASK | \
@@ -67,7 +68,7 @@ typedef struct
   guint           width;
   gfloat          arrowsize;
   guint           minwidth;
-  GdkColor        *paint_color;
+  GdkRGBA         *paint_color;
   cairo_t         *paint_ctx;
   gdouble         pressure;
 } GromitPaintContext;
@@ -98,7 +99,7 @@ typedef struct
 typedef struct
 {
   GtkWidget   *win;
-  GtkStatusIcon *trayicon;
+  AppIndicator *trayicon;
 
   GdkCursor   *paint_cursor;
   GdkCursor   *erase_cursor;
@@ -114,9 +115,9 @@ typedef struct
   guint        undo_keycode;
   gdouble      opacity;
 
-  GdkColor    *white;
-  GdkColor    *black;
-  GdkColor    *red;
+  GdkRGBA     *white;
+  GdkRGBA     *black;
+  GdkRGBA     *red;
 
   GromitPaintContext *default_pen;
   GromitPaintContext *default_eraser;
@@ -175,7 +176,7 @@ void coord_list_free (GromitData *data, GdkDevice* dev);
 
 
 GromitPaintContext *paint_context_new (GromitData *data, GromitPaintType type,
-				       GdkColor *fg_color, guint width, guint arrowsize,
+				       GdkRGBA *fg_color, guint width, guint arrowsize,
                                        guint minwidth);
 void paint_context_free (GromitPaintContext *context);
 
